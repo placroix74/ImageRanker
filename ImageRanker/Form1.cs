@@ -89,7 +89,7 @@ namespace ImageRanker
                 {
                     var dlg = new RankOne(m_sortData);
                     dlg.ShowDialog(this);
-                    m_sortAvailable.Release();
+                    m_rankAvailable.Release();
                 }
             }
             while (thread.IsAlive);
@@ -171,7 +171,7 @@ namespace ImageRanker
 
             // trigger UI
             m_pairAvailable.Release();
-            m_sortAvailable.WaitOne();
+            m_rankAvailable.WaitOne();
 
             return m_sortData.m_result;
         }
@@ -227,7 +227,7 @@ namespace ImageRanker
         Dictionary<string, SourceImage> m_sourceImages = new Dictionary<string, SourceImage>();
         string[] m_ranking = null;
         Semaphore m_pairAvailable = new Semaphore(0, 1);
-        Semaphore m_sortAvailable = new Semaphore(0, 1);
+        Semaphore m_rankAvailable = new Semaphore(0, 1);
 
         SortData m_sortData = new SortData();
 

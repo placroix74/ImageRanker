@@ -65,6 +65,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Name = "RankOne";
             this.Text = "RankOne";
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.RankOne_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);

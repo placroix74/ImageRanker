@@ -12,31 +12,53 @@ namespace ImageRanker
 {
     public partial class RankOne : Form
     {
-        public RankOne(Form1.SortData sortData)
+        public RankOne(SortData sortData)
         {
             InitializeComponent();
 
             m_sortData = sortData;
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Image = m_sortData.itemX;
+            pictureBox1.Image = m_sortData.m_left.m_image;
 
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox2.Image = m_sortData.itemY;
+            pictureBox2.Image = m_sortData.m_right.m_image;
         }
 
-        Form1.SortData m_sortData = null;
+        SortData m_sortData = null;
+
+        private void pickLeft()
+        {
+            ++m_sortData.m_left.m_hits;
+            m_sortData.m_result = -1;
+            Close();
+        }
+
+        private void pickRight()
+        {
+            ++m_sortData.m_right.m_hits;
+            m_sortData.m_result = 1;
+            Close();
+        }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            m_sortData.result = -1;
-            Close();
+            pickLeft();
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            m_sortData.result = 1;
-            Close();
+            pickRight();
+        }
+
+        private void RankOne_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyData)
+            {
+                case Keys.Left: pickLeft(); break;
+                case Keys.Right: pickRight(); break;
+                case Keys.Escape: Close(); break;
+            }
         }
     }
 }

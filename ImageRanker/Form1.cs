@@ -22,19 +22,30 @@ namespace ImageRanker
         private void loadImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var dlg = new OpenFileDialog();
+            dlg.Title = "Add Images";
             dlg.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.png";
             dlg.CheckFileExists = true;
             dlg.Multiselect = true;
 
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
-                m_sourceImages.Clear();
+                List<string> newRanking = null;
 
                 foreach (var fileName in dlg.FileNames)
                 {
+                    if (!m_sourceImages.Keys.Contains(fileName))
+                    {
+                        if (newRanking == null)
+                            newRanking = (m_ranking == null) ? new List<string>() : m_ranking.ToList();
+
+                        newRanking.Add(fileName);
+                    }
+
                     m_sourceImages[fileName] = Image.FromFile(fileName);
-                    m_ranking = m_sourceImages.Keys.ToArray();
                 }
+
+                if (newRanking != null)
+                    m_ranking = newRanking.ToArray();
 
                 refreshImageList();
             }
@@ -97,6 +108,14 @@ namespace ImageRanker
             listImages.LargeImageList.ImageSize = new Size(THUMBNAIL_SIZE, THUMBNAIL_SIZE);
             listImages.LargeImageList.ColorDepth = ColorDepth.Depth24Bit;
 
+            var enabled = m_sourceImages.Count > 0;
+            saveRankingToolStripMenuItem.Enabled = enabled;
+            imagesClearToolStripMenuItem.Enabled = enabled;
+            rankImagesToolStripMenuItem.Enabled = enabled;
+
+            if (m_ranking == null)
+                return;
+
             foreach (var key in m_ranking)
             {
                 var item = listImages.Items.Add(key);
@@ -145,6 +164,7 @@ namespace ImageRanker
             List<string> tentativeRanking = new List<string>();
 
             var dlg = new OpenFileDialog();
+            dlg.Title = "Open Ranking";
             dlg.Filter = "Text Files|*.txt";
             dlg.CheckFileExists = true;
 
@@ -191,7 +211,7 @@ namespace ImageRanker
 
             if (extraRankings.Count > 0)
             {
-                if (MessageBox.Show(this, "Files listed in the ranking were not loaded. Load them?", "Extra rankings", MessageBoxButtons.YesNo) == DialogResult.OK)
+                if (MessageBox.Show(this, "Files listed in the ranking were not loaded. Load them?", "Extra rankings", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     foreach (var fileName in extraRankings)
                         m_sourceImages[fileName] = Image.FromFile(fileName);
@@ -205,7 +225,7 @@ namespace ImageRanker
 
             if (extraImages.Count > 0)
             {
-                if (MessageBox.Show(this, "Files loaded were not ranked. Remove them?", "Extra images", MessageBoxButtons.YesNo) == DialogResult.OK)
+                if (MessageBox.Show(this, "Files loaded were not ranked. Remove them?", "Extra images", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     foreach (var key in extraImages)
                     {
@@ -227,6 +247,7 @@ namespace ImageRanker
         private void saveRankingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var dlg = new SaveFileDialog();
+            dlg.Title = "Save Ranking";
             dlg.Filter = "Text Files|*.txt";
             dlg.CheckPathExists = true;
 
@@ -244,6 +265,43 @@ namespace ImageRanker
             }
 
             rankingFile.Close();
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(this, "Remove selected images?", "Remove", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                List<string> newRanking = m_ranking.ToList();
+
+                foreach (ListViewItem item in listImages.SelectedItems)
+                {
+                    newRanking.Remove(item.Text);
+                    m_sourceImages.Remove(item.Text);
+                    listImages.Items.Remove(item);
+                }
+
+                m_ranking = newRanking.ToArray();
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listImages_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            toolStripMenuItem1.Enabled = listImages.SelectedItems.Count > 0;
+        }
+
+        private void imagesClearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(this, "Clear all images?", "Clear", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                m_sourceImages.Clear();
+                m_ranking = null;
+                refreshImageList();
+            }
         }
     }
 }

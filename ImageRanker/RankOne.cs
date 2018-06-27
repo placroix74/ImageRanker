@@ -29,13 +29,13 @@ namespace ImageRanker
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            m_sortData.result = 1;
+            m_sortData.result = -1;
             Close();
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            m_sortData.result = -1;
+            m_sortData.result = 1;
             Close();
         }
     }

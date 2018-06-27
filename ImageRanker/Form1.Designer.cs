@@ -30,14 +30,15 @@
         {
             this.listImages = new System.Windows.Forms.ListView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rankImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rankingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRankingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveRankingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.imagesClearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.rankImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,53 +52,18 @@
             this.listImages.Size = new System.Drawing.Size(508, 378);
             this.listImages.TabIndex = 0;
             this.listImages.UseCompatibleStateImageBehavior = false;
+            this.listImages.SelectedIndexChanged += new System.EventHandler(this.listImages_SelectedIndexChanged);
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.rankingToolStripMenuItem});
+            this.rankingToolStripMenuItem,
+            this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(508, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadImagesToolStripMenuItem,
-            this.rankImagesToolStripMenuItem,
-            this.toolStripMenuItem1,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.fileToolStripMenuItem.Text = "Images";
-            // 
-            // loadImagesToolStripMenuItem
-            // 
-            this.loadImagesToolStripMenuItem.Name = "loadImagesToolStripMenuItem";
-            this.loadImagesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.loadImagesToolStripMenuItem.Text = "&Load...";
-            this.loadImagesToolStripMenuItem.Click += new System.EventHandler(this.loadImagesToolStripMenuItem_Click);
-            // 
-            // rankImagesToolStripMenuItem
-            // 
-            this.rankImagesToolStripMenuItem.Name = "rankImagesToolStripMenuItem";
-            this.rankImagesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.rankImagesToolStripMenuItem.Text = "&Rank...";
-            this.rankImagesToolStripMenuItem.Click += new System.EventHandler(this.rankImagesToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.exitToolStripMenuItem.Text = "E&xit";
             // 
             // rankingToolStripMenuItem
             // 
@@ -111,16 +77,70 @@
             // loadRankingToolStripMenuItem
             // 
             this.loadRankingToolStripMenuItem.Name = "loadRankingToolStripMenuItem";
-            this.loadRankingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.loadRankingToolStripMenuItem.Text = "Load...";
+            this.loadRankingToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.loadRankingToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.loadRankingToolStripMenuItem.Text = "Open...";
             this.loadRankingToolStripMenuItem.Click += new System.EventHandler(this.loadRankingToolStripMenuItem_Click);
             // 
             // saveRankingToolStripMenuItem
             // 
+            this.saveRankingToolStripMenuItem.Enabled = false;
             this.saveRankingToolStripMenuItem.Name = "saveRankingToolStripMenuItem";
-            this.saveRankingToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveRankingToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveRankingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveRankingToolStripMenuItem.Text = "Save...";
             this.saveRankingToolStripMenuItem.Click += new System.EventHandler(this.saveRankingToolStripMenuItem_Click);
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadImagesToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.imagesClearToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.rankImagesToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.fileToolStripMenuItem.Text = "Images";
+            // 
+            // loadImagesToolStripMenuItem
+            // 
+            this.loadImagesToolStripMenuItem.Name = "loadImagesToolStripMenuItem";
+            this.loadImagesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Insert;
+            this.loadImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadImagesToolStripMenuItem.Text = "&Add...";
+            this.loadImagesToolStripMenuItem.Click += new System.EventHandler(this.loadImagesToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Enabled = false;
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem1.Text = "&Delete...";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
+            // imagesClearToolStripMenuItem
+            // 
+            this.imagesClearToolStripMenuItem.Enabled = false;
+            this.imagesClearToolStripMenuItem.Name = "imagesClearToolStripMenuItem";
+            this.imagesClearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.imagesClearToolStripMenuItem.Text = "Clea&r...";
+            this.imagesClearToolStripMenuItem.Click += new System.EventHandler(this.imagesClearToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // rankImagesToolStripMenuItem
+            // 
+            this.rankImagesToolStripMenuItem.Enabled = false;
+            this.rankImagesToolStripMenuItem.Name = "rankImagesToolStripMenuItem";
+            this.rankImagesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.rankImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rankImagesToolStripMenuItem.Text = "&Rank...";
+            this.rankImagesToolStripMenuItem.Click += new System.EventHandler(this.rankImagesToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -132,6 +152,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -146,11 +167,12 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadImagesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rankImagesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem imagesClearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rankingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadRankingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveRankingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }
 

@@ -5,7 +5,7 @@ I got stuck having to sift through hundreds of photos to select those which I th
 I needed a tool which could help me automate the task of comparing photos to one another.
 
 I had found a candidate, [Ranker](https://sourceforge.net/projects/ranker/), but:
-- The tool was built on top of GTKmm, which crippled my Windows system upon installation;
+- The tool is built on top of GTKmm, which crippled my Windows system upon installation;
 - The tool crashed when I tried to import images into it.
 
 ImageRanker is built on .NET 4.5.2.
@@ -17,7 +17,7 @@ ImageRanker is as lean as I could make it:
 - __Add/Remove/Clear images from the list.__
 - __Rank Images:__ You will be shown pairs of images until the ranking process is complete.
 
-# How to use
+## How to use
 The main form is pretty self-explanatory, as every command is listed in the menus, along 
 with their shortcuts.
 
@@ -31,8 +31,8 @@ The comparison form also has keyboard shortcuts:
 
 ## Technical Notes
 I had started out using Quicksort and showing the pairs as they came up, but the human mind
-being what it is, I could not escape [inconsistent sorting results](https://blogs.msdn.microsoft.com/oldnewthing/20090508-00/?p=18313).
+being what it is, I could not avoid [inconsistent results](https://blogs.msdn.microsoft.com/oldnewthing/20090508-00/?p=18313).
 
 So, basically:
 - Each image is compared exactly once against every other ((n^2 + n) / 2 comparisons in total);
-- Each image selected from a pair get a _hit_, and the final results are sorted by descending amount of hits.
+- Each image selected from a pair gets a _hit_, and the final results are sorted by descending hit count.

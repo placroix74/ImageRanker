@@ -12,32 +12,38 @@ namespace ImageRanker
 {
     public partial class RankOne : Form
     {
-        public RankOne(SortData sortData)
+        public enum Result
+        {
+            Left,
+            Right,
+            Equal,
+            Abort
+        };
+
+        public Image m_left = null;
+        public Image m_right = null;
+        public Result m_result = Result.Abort;
+
+        public RankOne()
         {
             InitializeComponent();
-
-            m_sortData = sortData;
-
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Image = m_sortData.m_left.m_image;
-
-            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox2.Image = m_sortData.m_right.m_image;
         }
-
-        SortData m_sortData = null;
 
         private void pickLeft()
         {
-            ++m_sortData.m_left.m_hits;
-            m_sortData.m_result = -1;
+            m_result = Result.Left;
             Close();
         }
 
         private void pickRight()
         {
-            ++m_sortData.m_right.m_hits;
-            m_sortData.m_result = 1;
+            m_result = Result.Right;
+            Close();
+        }
+
+        private void pickBoth()
+        {
+            m_result = Result.Equal;
             Close();
         }
 
@@ -57,8 +63,31 @@ namespace ImageRanker
             {
                 case Keys.Left: pickLeft(); break;
                 case Keys.Right: pickRight(); break;
+                case Keys.Enter: pickBoth(); break;
                 case Keys.Escape: Close(); break;
             }
+
+            e.Handled = true;
+        }
+
+        private void RankOne_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (m_result != Result.Abort)
+                return;
+
+            if (MessageBox.Show(this, "Abort the ranking process?", "Abort", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                e.Cancel = true;
+        }
+
+        private void RankOne_Shown(object sender, EventArgs e)
+        {
+            m_result = Result.Abort;
+
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.Image = m_left;
+
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox2.Image = m_right;
         }
     }
 }

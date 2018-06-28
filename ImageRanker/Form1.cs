@@ -23,13 +23,6 @@ namespace ImageRanker
         public int m_hits = 0;
     };
 
-    public class SortData
-    {
-        public SourceImage m_left;
-        public SourceImage m_right;
-        public int m_result;
-    };
-
     public partial class Form1 : Form
     {
         public Form1()
@@ -87,8 +80,13 @@ namespace ImageRanker
             {
                 if (m_pairAvailable.WaitOne(100))
                 {
-                    var dlg = new RankOne(m_sortData);
+                    var dlg = new RankOne();
+                    dlg.m_left = m_sortData.m_left;
+                    dlg.m_right = m_sortData.m_right;
+
                     dlg.ShowDialog(this);
+
+                    m_sortData.m_result = dlg.m_result;
                     m_rankAvailable.Release();
                 }
             }
@@ -131,6 +129,9 @@ namespace ImageRanker
         private void rankImages()
         {
             Debug.Assert(m_sourceImages.Count() > 0);
+
+            m_sortData = new SortData();
+
 #if false
             Array.Sort(m_ranking, compareImages);
 #else
@@ -153,6 +154,8 @@ namespace ImageRanker
 
             Array.Sort(m_ranking, sortImageHitsDesc);
 #endif
+
+            m_sortData = null;
         }
 
         private int sortImageHitsDesc(string x, string y)
@@ -160,20 +163,39 @@ namespace ImageRanker
             return m_sourceImages[y].m_hits - m_sourceImages[x].m_hits;
         }
 
-        private int compareImages(string x, string y)
+        private class SortData
         {
-            if (x == y)
+            public Image m_left;
+            public Image m_right;
+            public RankOne.Result m_result;
+            public bool m_cancel = false;
+        };
+
+        private SortData m_sortData = null;
+
+        private int compareImages(string left, string right)
+        {
+            if (left == right || m_sortData.m_result == RankOne.Result.Abort)
                 return 0;
 
-            m_sortData.m_left = m_sourceImages[x];
-            m_sortData.m_right = m_sourceImages[y];
-            m_sortData.m_result = 0;
+            m_sortData.m_left = m_sourceImages[left].m_image;
+            m_sortData.m_right = m_sourceImages[right].m_image;
 
             // trigger UI
             m_pairAvailable.Release();
             m_rankAvailable.WaitOne();
 
-            return m_sortData.m_result;
+            switch (m_sortData.m_result)
+            {
+                case RankOne.Result.Left:
+                    ++m_sourceImages[left].m_hits;
+                    return -1;
+                case RankOne.Result.Right:
+                    ++m_sourceImages[right].m_hits;
+                    return 1;
+            };
+
+            return 0;
         }
 
         private void refreshImageList()
@@ -228,8 +250,6 @@ namespace ImageRanker
         string[] m_ranking = null;
         Semaphore m_pairAvailable = new Semaphore(0, 1);
         Semaphore m_rankAvailable = new Semaphore(0, 1);
-
-        SortData m_sortData = new SortData();
 
         private void loadRankingToolStripMenuItem_Click(object sender, EventArgs e)
         {

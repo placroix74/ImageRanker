@@ -263,8 +263,10 @@ namespace ImageRanker
 
             foreach (var key in m_ranking)
             {
-                var item = listImages.Items.Add(key);
-                var bitmap = m_sourceImages[key].m_image;
+                var source = m_sourceImages[key];
+                var text = key + ((source.m_hits < 0) ? "\n(excluded)" : "\n(" + source.m_hits + " hits)");
+                var item = listImages.Items.Add(text);
+                var bitmap = source.m_image;
                 var thumbnail = new Bitmap(THUMBNAIL_SIZE, THUMBNAIL_SIZE);
 
                 var dc = Graphics.FromImage(thumbnail);
@@ -287,6 +289,7 @@ namespace ImageRanker
                 thumbnail.MakeTransparent(Color.Magenta);
                 listImages.LargeImageList.Images.Add(key, thumbnail); //, Color.Magenta);
                 item.ImageKey = key;
+                item.Tag = key;
             }
         }
 
@@ -421,8 +424,9 @@ namespace ImageRanker
 
                 foreach (ListViewItem item in listImages.SelectedItems)
                 {
-                    newRanking.Remove(item.Text);
-                    m_sourceImages.Remove(item.Text);
+                    var key = (string)item.Tag;
+                    newRanking.Remove(key);
+                    m_sourceImages.Remove(key);
                     listImages.Items.Remove(item);
                 }
 

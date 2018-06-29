@@ -64,6 +64,9 @@ namespace ImageRanker
             }
         }
 
+        private int m_pairTotal = 0;
+        private int m_thisPair = 0;
+
         private void rankImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (m_sourceImages.Count() <= 0)
@@ -81,6 +84,7 @@ namespace ImageRanker
                 if (m_pairAvailable.WaitOne(100))
                 {
                     var dlg = new RankOne();
+                    dlg.Text = "Ranking Pair " + m_thisPair + " of " + m_pairTotal;
                     dlg.m_left = m_sortData.m_left;
                     dlg.m_right = m_sortData.m_right;
 
@@ -149,8 +153,14 @@ namespace ImageRanker
                 }
             }
 
+            m_pairTotal = tests.Count();
+            m_thisPair = 0;
+
             foreach (var imagePair in Shuffle(tests, new Random()))
+            {
+                ++m_thisPair;
                 compareImages(m_ranking[imagePair.m_left], m_ranking[imagePair.m_right]);
+            }
 
             Array.Sort(m_ranking, sortImageHitsDesc);
 #endif

@@ -12,27 +12,37 @@ ImageRanker is built on .NET 4.5.2.
 
 ## What Should You Expect?
 ImageRanker is as lean as I could make it:
+
 - __Open/Save text-based ranking files:__ these files are simply lists of absolute image 
   pathnames, ordered by rank (highest rank first).
 - __Add/Remove/Clear images from the list.__
 - __Rank Images:__ You will be shown pairs of images until the ranking process is complete.
 
 ## How to use
+
+### Main Form
 The main form is pretty self-explanatory, as every command is listed in the menus, along 
 with their shortcuts.
 
-In the pair comparison form, however:
-- Clicking on an image selects it and closes the form automatically;
-- Closing the form without making a selection means the images rank equally;
+### Pair Ranking Dialog
+Progress of the ranking process appears in the title bar: "Ranking Pair X of N".
 
-The comparison form also has keyboard shortcuts:
-- Pressing the Left or Right key selects the image on the left or right, respectively;
-- Pressing the Escape key closes the form without making a selection.
+Radio buttons below the image pair show possible outcomes of the ranking:
+
+- __Pick Both (initially selected):__ Both images are considered equivalent; not one image
+  of the two registers a _hit_.
+- __Pick (either side):__ The image on the same side as the radio button is considered more
+  valuable that on the other side, and registers a _hit_.
+- __Exclude (either side):__ The image on the same side as the radio button is excluded from
+  further comparison. Note that this does _not_ contitute a hit for the image on the other side.
+
+Clicking the "Next" button validates the selected action.
 
 ## Technical Notes
 I had started out using Quicksort and showing the pairs as they came up, but the human mind
 being what it is, I could not avoid [inconsistent results](https://blogs.msdn.microsoft.com/oldnewthing/20090508-00/?p=18313).
 
 So, basically:
+
 - Each image is compared exactly once against every other ((n^2 + n) / 2 comparisons in total);
-- Each image selected from a pair gets a _hit_, and the final results are sorted by descending hit count.
+- Each image selected from a pair registers a _hit_, and the images get sorted by descending hit count.

@@ -12,19 +12,19 @@ using System.Windows.Forms;
 
 namespace ImageRanker
 {
-    public class SourceImage : IDisposable
-    {
-        public void Dispose()
-        {
-            m_image.Dispose();
-        }
-
-        public Image m_image = null;
-        public int m_hits = 0;
-    };
-
     public partial class Form1 : Form
     {
+        public class SourceImage : IDisposable
+        {
+            public void Dispose()
+            {
+                m_image.Dispose();
+            }
+
+            public Image m_image = null;
+            public int m_hits = 0;
+        };
+
         public Form1()
         {
             InitializeComponent();
@@ -53,7 +53,7 @@ namespace ImageRanker
                     }
 
                     var newImage = new SourceImage();
-                    newImage.m_image = Image.FromFile(fileName);
+                    newImage.m_image = LoadImage(fileName);
                     m_sourceImages[fileName] = newImage;
                 }
 
@@ -88,9 +88,8 @@ namespace ImageRanker
                     dlg.m_left = m_sortData.m_left;
                     dlg.m_right = m_sortData.m_right;
 
-                    dlg.ShowDialog(this);
+                    m_sortData.m_action = (dlg.ShowDialog(this) == DialogResult.OK) ? dlg.m_action : RankOne.Action.Abort;
 
-                    m_sortData.m_result = dlg.m_result;
                     m_rankAvailable.Release();
                 }
             }
@@ -146,8 +145,14 @@ namespace ImageRanker
 
             for (int i = 0; i < m_ranking.Count(); ++i)
             {
+                if (m_sourceImages[m_ranking[i]].m_hits < 0)
+                    continue;
+
                 for (int j = i + 1; j < m_ranking.Count(); ++j)
                 {
+                    if (m_sourceImages[m_ranking[j]].m_hits < 0)
+                        continue;
+
                     tests.Add(alternate ? new ImagePair(j, i) : new ImagePair(i, j));
                     alternate = !alternate;
                 }
@@ -177,7 +182,7 @@ namespace ImageRanker
         {
             public Image m_left;
             public Image m_right;
-            public RankOne.Result m_result;
+            public RankOne.Action m_action;
             public bool m_cancel = false;
         };
 
@@ -185,24 +190,53 @@ namespace ImageRanker
 
         private int compareImages(string left, string right)
         {
-            if (left == right || m_sortData.m_result == RankOne.Result.Abort)
+            if (left == right || m_sortData.m_action == RankOne.Action.Abort)
                 return 0;
 
-            m_sortData.m_left = m_sourceImages[left].m_image;
-            m_sortData.m_right = m_sourceImages[right].m_image;
+            var srcLeft = m_sourceImages[left];
+            var srcRight = m_sourceImages[right];
 
-            // trigger UI
-            m_pairAvailable.Release();
-            m_rankAvailable.WaitOne();
-
-            switch (m_sortData.m_result)
+            // excluded from ranking?
+            if (srcLeft.m_hits < 0)
             {
-                case RankOne.Result.Left:
+                if (srcRight.m_hits < 0)
+                    return 0;
+                else
+                    return 1; // as if right was picked
+            }
+            else
+            {
+                if (srcRight.m_hits < 0)
+                    return -1; // as if left was picked
+                else
+                {
+                    m_sortData.m_left = m_sourceImages[left].m_image;
+                    m_sortData.m_right = m_sourceImages[right].m_image;
+
+                    // trigger UI
+                    m_pairAvailable.Release();
+                    m_rankAvailable.WaitOne();
+                }
+            }
+
+            switch (m_sortData.m_action)
+            {
+                case RankOne.Action.PickLeft:
                     ++m_sourceImages[left].m_hits;
                     return -1;
-                case RankOne.Result.Right:
+                case RankOne.Action.PickRight:
                     ++m_sourceImages[right].m_hits;
                     return 1;
+                case RankOne.Action.ExcludeLeft:
+                    m_sourceImages[left].m_hits = -1;
+                    return -1;
+                case RankOne.Action.ExcludeRight:
+                    m_sourceImages[right].m_hits = -1;
+                    return 1;
+                case RankOne.Action.ExcludeBoth:
+                    m_sourceImages[left].m_hits = -1;
+                    m_sourceImages[right].m_hits = -1;
+                    break;
             };
 
             return 0;
@@ -254,6 +288,12 @@ namespace ImageRanker
                 listImages.LargeImageList.Images.Add(key, thumbnail); //, Color.Magenta);
                 item.ImageKey = key;
             }
+        }
+
+        private Image LoadImage(string path)
+        {
+            // https://stackoverflow.com/a/1105330/2938561
+            return Image.FromStream(new MemoryStream(File.ReadAllBytes(path)));
         }
 
         Dictionary<string, SourceImage> m_sourceImages = new Dictionary<string, SourceImage>();
@@ -318,7 +358,7 @@ namespace ImageRanker
                     foreach (var fileName in extraRankings)
                     {
                         var newImage = new SourceImage();
-                        newImage.m_image = Image.FromFile(fileName);
+                        newImage.m_image = LoadImage(fileName);
                         m_sourceImages[fileName] = newImage;
                     }
                 }

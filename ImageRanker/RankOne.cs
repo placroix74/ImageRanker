@@ -12,38 +12,47 @@ namespace ImageRanker
 {
     public partial class RankOne : Form
     {
-        public enum Result
+        public enum Action
         {
-            Left,
-            Right,
-            Equal,
+            PickLeft,
+            PickRight,
+            PickBoth,
+            ExcludeLeft,
+            ExcludeRight,
+            ExcludeBoth,
             Abort
         };
 
         public Image m_left = null;
         public Image m_right = null;
-        public Result m_result = Result.Abort;
+        public Action m_action;
 
         public RankOne()
         {
             InitializeComponent();
+
+            radioPickLeft.CheckedChanged += radioButton_CheckedChanged;
+            radioPickRight.CheckedChanged += radioButton_CheckedChanged;
+            radioPickBoth.CheckedChanged += radioButton_CheckedChanged;
+            radioExcludeLeft.CheckedChanged += radioButton_CheckedChanged;
+            radioExcludeRight.CheckedChanged += radioButton_CheckedChanged;
         }
 
         private void pickLeft()
         {
-            m_result = Result.Left;
+            m_action = Action.PickLeft;
             Close();
         }
 
         private void pickRight()
         {
-            m_result = Result.Right;
+            m_action = Action.PickRight;
             Close();
         }
 
         private void pickBoth()
         {
-            m_result = Result.Equal;
+            m_action = Action.PickBoth;
             Close();
         }
 
@@ -57,37 +66,31 @@ namespace ImageRanker
             pickRight();
         }
 
-        private void RankOne_KeyUp(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyData)
-            {
-                case Keys.Left: pickLeft(); break;
-                case Keys.Right: pickRight(); break;
-                case Keys.Enter: pickBoth(); break;
-                case Keys.Escape: Close(); break;
-            }
-
-            e.Handled = true;
-        }
-
         private void RankOne_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (m_result != Result.Abort)
-                return;
-
-            if (MessageBox.Show(this, "Abort the ranking process?", "Abort", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            if (this.DialogResult == DialogResult.Abort &&
+                MessageBox.Show(this, "Abort the ranking process?", "Abort", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
                 e.Cancel = true;
+            }
         }
 
         private void RankOne_Shown(object sender, EventArgs e)
         {
-            m_result = Result.Abort;
+            m_action = Action.Abort;
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Image = m_left;
 
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox2.Image = m_right;
+        }
+
+        void radioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            var radio = (RadioButton)sender;
+            if (radio.Checked && radio.Tag != null)
+                m_action = (Action) Enum.Parse(typeof(Action), radio.Tag.ToString());
         }
     }
 }

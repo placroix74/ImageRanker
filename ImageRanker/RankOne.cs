@@ -38,37 +38,23 @@ namespace ImageRanker
             radioExcludeRight.CheckedChanged += radioButton_CheckedChanged;
         }
 
-        private void pickLeft()
-        {
-            m_action = Action.PickLeft;
-            Close();
-        }
-
-        private void pickRight()
-        {
-            m_action = Action.PickRight;
-            Close();
-        }
-
-        private void pickBoth()
-        {
-            m_action = Action.PickBoth;
-            Close();
-        }
-
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            pickLeft();
+            m_action = Action.PickLeft;
+            this.DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            pickRight();
+            m_action = Action.PickRight;
+            this.DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void RankOne_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (this.DialogResult == DialogResult.Abort &&
+            if (this.DialogResult != DialogResult.OK &&
                 MessageBox.Show(this, "Abort the ranking process?", "Abort", MessageBoxButtons.YesNo) != DialogResult.Yes)
             {
                 e.Cancel = true;
@@ -77,8 +63,6 @@ namespace ImageRanker
 
         private void RankOne_Shown(object sender, EventArgs e)
         {
-            m_action = Action.Abort;
-
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Image = m_left;
 
